@@ -1,38 +1,18 @@
 package com.rizalfahrudin.moviecatalogue.ui.detail
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.rizalfahrudin.moviecatalogue.data.MovieTvEntity
-import com.rizalfahrudin.moviecatalogue.utils.Data
+import com.rizalfahrudin.moviecatalogue.data.source.MovieTvRepository
+import com.rizalfahrudin.moviecatalogue.data.source.local.entity.MovieTvEntity
 
-class DetailViewModel : ViewModel() {
+class DetailViewModel(private val movieTvRepository: MovieTvRepository) : ViewModel() {
+    private var typePosition: Int = 0
     private var id: Int = 0
-
-
-    fun setIdData(id: Int) {
+    fun setTypeMovieTv(typePosition: Int, id: Int) {
+        this.typePosition = typePosition
         this.id = id
     }
 
-    fun getDataMovie(): MovieTvEntity {
-        lateinit var movie: MovieTvEntity
-        val movieEntities = Data.generateDataMovie()
-        for (movieEntity in movieEntities) {
-            if (movieEntity.id == id) {
-                movie = movieEntity
-            }
-        }
-        return movie
-    }
-
-    fun getDataTv(): MovieTvEntity {
-        lateinit var tv: MovieTvEntity
-        val tvEntities = Data.generateDataTv()
-        for (tvEntity in tvEntities) {
-            if (tvEntity.id == id) {
-                tv = tvEntity
-            }
-        }
-        return tv
-    }
-
-
+    fun getDataMovie(): LiveData<MovieTvEntity> =
+        movieTvRepository.getDataDetailMovieTv(typePosition, id)
 }

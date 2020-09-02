@@ -1,11 +1,16 @@
 package com.rizalfahrudin.moviecatalogue.ui.main.content
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.rizalfahrudin.moviecatalogue.data.MovieTvEntity
-import com.rizalfahrudin.moviecatalogue.utils.Data
+import com.rizalfahrudin.moviecatalogue.data.source.MovieTvRepository
+import com.rizalfahrudin.moviecatalogue.data.source.local.entity.MovieTvEntity
 
-class MovieTvViewModel : ViewModel() {
-    fun getDataMovie(): List<MovieTvEntity> = Data.generateDataMovie()
+class MovieTvViewModel(private val movieTvRepository: MovieTvRepository) : ViewModel() {
+    private var typePosition: Int = 0
+    fun setTypeMovieTv(typePosition: Int) {
+        this.typePosition = typePosition
+    }
 
-    fun getDataTv(): List<MovieTvEntity> = Data.generateDataTv()
+    fun getDataMovieTv(): LiveData<List<MovieTvEntity>> =
+        movieTvRepository.getDataMovieTv(typePosition)
 }
