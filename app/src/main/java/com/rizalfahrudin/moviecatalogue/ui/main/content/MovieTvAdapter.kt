@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.rizalfahrudin.moviecatalogue.R
-import com.rizalfahrudin.moviecatalogue.data.MovieTvEntity
+import com.rizalfahrudin.moviecatalogue.data.source.local.entity.MovieTvEntity
 import kotlinx.android.synthetic.main.item.view.*
 
 class MovieTvAdapter(private val listener: (MovieTvEntity) -> Unit) :
@@ -27,6 +27,8 @@ class MovieTvAdapter(private val listener: (MovieTvEntity) -> Unit) :
                 tv_description.text = dataMovieTv.description
                 Glide.with(context)
                     .load(dataMovieTv.image)
+                    .apply(RequestOptions.placeholderOf(R.drawable.ic_error))
+                    .error(R.drawable.ic_error)
                     .apply(RequestOptions())
                     .into(img_poster)
                 setOnClickListener { listener(dataMovieTv) }

@@ -2,12 +2,14 @@
 package com.rizalfahrudin.moviecatalogue.ui.detail
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.rizalfahrudin.moviecatalogue.R
-import com.rizalfahrudin.moviecatalogue.data.MovieTvEntity
+import com.rizalfahrudin.moviecatalogue.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_detail.*
 
 class DetailActivity : AppCompatActivity() {
@@ -16,29 +18,34 @@ class DetailActivity : AppCompatActivity() {
         const val ID = "id"
     }
 
-    private lateinit var movieTvEntity: MovieTvEntity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
         supportActionBar?.title = "Detail"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        val factory = ViewModelFactory.getInstance()
         val viewModel = ViewModelProvider(
             this,
-            ViewModelProvider.NewInstanceFactory()
+            factory
         )[DetailViewModel::class.java]
+
         val position = intent.getIntExtra(POSITION, 0)
         val id = intent.getIntExtra(ID, 0)
+        viewModel.setTypeMovieTv(position, id)
 
-        viewModel.setIdData(id)
-        movieTvEntity = if (position == 0) viewModel.getDataMovie() else viewModel.getDataTv()
-
-        tv_title_detail.text = movieTvEntity.title
-        tv_description_detail.text = movieTvEntity.description
-        Glide.with(this)
-            .load(movieTvEntity.image)
-            .apply(RequestOptions())
-            .into(img_poster_detail)
+        loading_detail.visibility = View.VISIBLE
+        viewModel.getDataMovie().observe(this, Observer {
+            if (it != null) {
+                loading_detail.visibility = View.GONE
+                tv_title_detail.text = it.title
+                tv_description_detail.text = it.description
+                Glide.with(this)
+                    .load(it.image)
+                    .apply(RequestOptions())
+                    .into(img_poster_detail)
+            }
+        })
     }
 
     override fun onSupportNavigateUp(): Boolean {
