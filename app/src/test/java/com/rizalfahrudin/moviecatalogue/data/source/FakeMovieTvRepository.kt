@@ -16,41 +16,23 @@ import com.rizalfahrudin.moviecatalogue.data.source.remote.response.TvResponse
 import com.rizalfahrudin.moviecatalogue.utils.AppExecutor
 import com.rizalfahrudin.moviecatalogue.vo.Resource
 
-class MovieTvRepository private constructor(
+class FakeMovieTvRepository(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource,
     private val appExecutor: AppExecutor
-) : MovieTvDataSource {
-
-    companion object {
-        @Volatile
-        private var instance: MovieTvRepository? = null
-
-        fun getInstance(
-            remoteDataSource: RemoteDataSource,
-            localDataSource: LocalDataSource,
-            appExecutor: AppExecutor
-        ): MovieTvRepository =
-            instance ?: synchronized(this) {
-                instance ?: MovieTvRepository(remoteDataSource, localDataSource, appExecutor)
-            }
-    }
+): MovieTvDataSource{
 
     override fun getDataMovieTv(typePosition: Int): LiveData<Resource<PagedList<MovieTvEntity>>> {
-        return when (typePosition) {
+        return when(typePosition) {
             0 -> {
-                object :
-                    NetworkBoundResource<PagedList<MovieTvEntity>, MovieResponse>(appExecutor) {
+                object : NetworkBoundResource<PagedList<MovieTvEntity>, MovieResponse>(appExecutor) {
                     override fun loadFromDB(): LiveData<PagedList<MovieTvEntity>> {
                         val config = PagedList.Config.Builder()
                             .setEnablePlaceholders(false)
                             .setInitialLoadSizeHint(4)
                             .setPageSize(4)
                             .build()
-                        return LivePagedListBuilder(
-                            localDataSource.getMovieTv(typePosition),
-                            config
-                        ).build()
+                        return LivePagedListBuilder(localDataSource.getMovieTv(typePosition), config).build()
                     }
 
                     override fun showFetchData(data: PagedList<MovieTvEntity>?): Boolean {
@@ -85,10 +67,7 @@ class MovieTvRepository private constructor(
                             .setInitialLoadSizeHint(4)
                             .setPageSize(4)
                             .build()
-                        return LivePagedListBuilder(
-                            localDataSource.getMovieTv(typePosition),
-                            config
-                        ).build()
+                        return LivePagedListBuilder(localDataSource.getMovieTv(typePosition), config).build()
                     }
 
                     override fun showFetchData(data: PagedList<MovieTvEntity>?): Boolean {
@@ -122,7 +101,7 @@ class MovieTvRepository private constructor(
         typePosition: Int,
         id: Int
     ): LiveData<Resource<MovieTvEntity>> {
-        return when (typePosition) {
+        return when(typePosition) {
             0 -> {
                 object : NetworkBoundResource<MovieTvEntity, MovieEntityResponse>(appExecutor) {
                     override fun loadFromDB(): LiveData<MovieTvEntity> {
@@ -192,10 +171,7 @@ class MovieTvRepository private constructor(
             .setInitialLoadSizeHint(4)
             .setPageSize(4)
             .build()
-        return LivePagedListBuilder(
-            localDataSource.getFavoriteMovieTv(typePosition),
-            config
-        ).build()
+        return LivePagedListBuilder(localDataSource.getFavoriteMovieTv(typePosition), config).build()
     }
 
 }

@@ -5,9 +5,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.rizalfahrudin.moviecatalogue.ui.main.content.MovieTvFragment
+import com.rizalfahrudin.moviecatalogue.ui.main.content.MovieTvFragment.Companion.PAGE
 import com.rizalfahrudin.moviecatalogue.ui.main.content.MovieTvFragment.Companion.POSITION_TAB
 
-class PagerAdapter(activity: AppCompatActivity) :
+class PagerAdapter(activity: AppCompatActivity, private val page: Int) :
     FragmentStateAdapter(activity) {
     override fun getItemCount(): Int = 2
 
@@ -15,6 +16,7 @@ class PagerAdapter(activity: AppCompatActivity) :
         val fragment = MovieTvFragment()
         fragment.arguments = Bundle().apply {
             putInt(POSITION_TAB, position)
+            putInt(PAGE, page)
         }
         return fragment
     }

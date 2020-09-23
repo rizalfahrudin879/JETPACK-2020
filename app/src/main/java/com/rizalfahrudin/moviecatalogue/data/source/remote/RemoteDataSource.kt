@@ -1,6 +1,10 @@
 package com.rizalfahrudin.moviecatalogue.data.source.remote
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
+import com.rizalfahrudin.moviecatalogue.data.source.remote.api.RemoteApiRepository
+import com.rizalfahrudin.moviecatalogue.data.source.remote.api.RemoteDataApi
 import com.rizalfahrudin.moviecatalogue.data.source.remote.response.MovieEntityResponse
 import com.rizalfahrudin.moviecatalogue.data.source.remote.response.MovieResponse
 import com.rizalfahrudin.moviecatalogue.data.source.remote.response.TvEntityResponse
@@ -12,6 +16,7 @@ import kotlinx.coroutines.launch
 
 class RemoteDataSource private constructor(
     private val remoteApiRepository: RemoteApiRepository,
+    private val remoteDataApi: RemoteDataApi,
     private val gson: Gson,
     private val context: CoroutineContextProvider = CoroutineContextProvider()
 ){
@@ -20,48 +25,81 @@ class RemoteDataSource private constructor(
         @Volatile
         private var instance: RemoteDataSource? = null
 
-        fun getInstance(remoteApiRepository: RemoteApiRepository): RemoteDataSource =
-            instance?: synchronized(this) {
-                instance?: RemoteDataSource(remoteApiRepository, Gson(), CoroutineContextProvider())
+        fun getInstance(
+            remoteApiRepository: RemoteApiRepository,
+            remoteDataApi: RemoteDataApi
+        ): RemoteDataSource =
+            instance ?: synchronized(this) {
+                instance ?: RemoteDataSource(
+                    remoteApiRepository,
+                    remoteDataApi,
+                    Gson(),
+                    CoroutineContextProvider()
+                )
             }
     }
 
-    fun getMovieTv(typePosition: Int, callback: LoadCallback) {
+    fun getMovie(): LiveData<ApiResponse<MovieResponse>> {
         EspressoIdlingResource.increment()
-        GlobalScope.launch (context.main){
-            val movieTvResponse = gson.fromJson(
-                remoteApiRepository.doRequestAsync(RemoteDataApi().getMovieTv(typePosition)).await(),
-                if (typePosition == 0) MovieResponse::class.java else TvResponse::class.java
+        val resultMovies = MutableLiveData<ApiResponse<MovieResponse>>()
+        GlobalScope.launch(context.main) {
+            val movieResponse = gson.fromJson(
+                remoteApiRepository.doRequestAsync(
+                    remoteDataApi.getMovie()
+                ),
+                MovieResponse::class.java
             )
-
-            if (typePosition == 0) callback.onAllReceivedMovie(movieTvResponse as MovieResponse)
-            else callback.onAllReceivedTv(movieTvResponse as TvResponse)
-
+            resultMovies.value = ApiResponse.success(movieResponse)
             EspressoIdlingResource.decrement()
         }
+        return resultMovies
     }
 
-    fun getDetailMovieTv(typePosition: Int, id: Int, callback: LoadDetailCallback) {
+    fun getTv(): LiveData<ApiResponse<TvResponse>> {
         EspressoIdlingResource.increment()
-        GlobalScope.launch (context.main) {
-
-            val detailMovieTvResponse = gson.fromJson(
-                remoteApiRepository.doRequestAsync(RemoteDataApi().getDetailMovieTv(typePosition, id)).await(),
-                if (typePosition == 0) MovieEntityResponse::class.java else TvEntityResponse::class.java
+        val resultTv = MutableLiveData<ApiResponse<TvResponse>>()
+        GlobalScope.launch(context.main) {
+            val tvResponse = gson.fromJson(
+                remoteApiRepository.doRequestAsync(
+                    remoteDataApi.getTv()
+                ),
+                TvResponse::class.java
             )
-
-            if (typePosition == 0) callback.onAllReceivedMovie(detailMovieTvResponse as MovieEntityResponse)
-            else callback.onAllReceivedTv(detailMovieTvResponse as TvEntityResponse)
-
+            resultTv.value = ApiResponse.success(tvResponse)
             EspressoIdlingResource.decrement()
         }
+        return resultTv
     }
-    interface LoadCallback {
-        fun onAllReceivedMovie(movieResponse: MovieResponse)
-        fun onAllReceivedTv(tvResponse: TvResponse)
+
+    fun getMovieById(id: Int): LiveData<ApiResponse<MovieEntityResponse>> {
+        EspressoIdlingResource.increment()
+        val resultMovie = MutableLiveData<ApiResponse<MovieEntityResponse>>()
+        GlobalScope.launch(context.main) {
+            val movieResponse = gson.fromJson(
+                remoteApiRepository.doRequestAsync(
+                    remoteDataApi.getMovieById(id)
+                ),
+                MovieEntityResponse::class.java
+            )
+            resultMovie.value = ApiResponse.success(movieResponse)
+            EspressoIdlingResource.decrement()
+        }
+        return resultMovie
     }
-    interface LoadDetailCallback {
-        fun onAllReceivedMovie(movieResponse: MovieEntityResponse)
-        fun onAllReceivedTv(tvResponse: TvEntityResponse)
+
+    fun getTvById(id: Int): LiveData<ApiResponse<TvEntityResponse>> {
+        EspressoIdlingResource.increment()
+        val resultTv = MutableLiveData<ApiResponse<TvEntityResponse>>()
+        GlobalScope.launch(context.main) {
+            val tvResponse = gson.fromJson(
+                remoteApiRepository.doRequestAsync(
+                    remoteDataApi.getTveById(id)
+                ),
+                TvEntityResponse::class.java
+            )
+            resultTv.value = ApiResponse.success(tvResponse)
+            EspressoIdlingResource.decrement()
+        }
+        return resultTv
     }
 }

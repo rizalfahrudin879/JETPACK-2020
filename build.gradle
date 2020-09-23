@@ -41,4 +41,6 @@ ext {
     materialVersion = '1.2.0'
     androidXTestVersion = '1.2.0'
     mockitoVersion = '3.0.0'
+    roomVersion = '2.2.3'
+    pagingVersion = '2.1.1'
 }

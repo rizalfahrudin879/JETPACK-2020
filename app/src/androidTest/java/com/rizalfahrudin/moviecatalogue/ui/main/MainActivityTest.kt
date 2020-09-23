@@ -54,7 +54,11 @@ class MainActivityTest {
 
         onView(withId(R.id.tv_title_detail))
             .check(matches(isDisplayed()))
+
+        onView(withId(R.id.action_favorite)).perform(click())
+
     }
+
     @Test
     fun loadDataTv() {
         onView(withText(R.string.tv)).perform(click())
@@ -63,15 +67,85 @@ class MainActivityTest {
         onView(withId(R.id.rv_movie_tv))
             .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(20))
     }
+
     @Test
     fun loadDetailTv() {
         onView(withText(R.string.tv)).perform(click())
 
         onView(withId(R.id.rv_movie_tv))
-            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
+            .perform(
+                RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                    0,
+                    click()
+                )
+            )
 
         onView(withId(R.id.tv_title_detail))
             .check(matches(isDisplayed()))
 
+        onView(withId(R.id.action_favorite)).perform(click())
+    }
+
+    @Test
+    fun loadFavoriteDataMovie() {
+        onView(withId(R.id.action_favorite)).perform(click())
+
+        onView(withText(R.string.movie)).perform(click())
+        onView(withId(R.id.rv_movie_tv))
+            .check(matches(isDisplayed()))
+        onView(withId(R.id.rv_movie_tv))
+            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(20))
+    }
+
+
+    @Test
+    fun loadFavoriteDetailMovie() {
+        onView(withId(R.id.action_favorite)).perform(click())
+
+
+        onView(withText(R.string.movie)).perform(click())
+
+        onView(withId(R.id.rv_movie_tv))
+            .perform(
+                RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                    0,
+                    click()
+                )
+            )
+
+        onView(withId(R.id.tv_title_detail))
+            .check(matches(isDisplayed()))
+
+        onView(withId(R.id.action_favorite)).perform(click())
+    }
+
+
+    @Test
+    fun loadFavoriteDataTv() {
+        onView(withId(R.id.action_favorite)).perform(click())
+
+        onView(withText(R.string.tv)).perform(click())
+        onView(withId(R.id.rv_movie_tv))
+            .check(matches(isDisplayed()))
+        onView(withId(R.id.rv_movie_tv))
+            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(20))
+    }
+
+    @Test
+    fun loadFavoriteDetailTv() {
+        onView(withText(R.string.tv)).perform(click())
+
+        onView(withId(R.id.rv_movie_tv))
+            .perform(
+                RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                    0,
+                    click()
+                )
+            )
+
+        onView(withId(R.id.tv_title_detail))
+            .check(matches(isDisplayed()))
+
+        onView(withId(R.id.action_favorite)).perform(click())
     }
 }

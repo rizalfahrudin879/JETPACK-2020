@@ -5,10 +5,9 @@ import com.rizalfahrudin.moviecatalogue.BuildConfig
 import com.rizalfahrudin.moviecatalogue.data.source.local.entity.MovieTvEntity
 import com.rizalfahrudin.moviecatalogue.data.source.remote.response.MovieResponse
 import com.rizalfahrudin.moviecatalogue.data.source.remote.response.TvResponse
-import java.io.BufferedReader
-import java.io.File
 
 object DataDummy {
+
 
     fun generateDataMovie(): List<MovieTvEntity> {
         val movieResults = ArrayList<MovieTvEntity>()
@@ -20,7 +19,8 @@ object DataDummy {
                 response.id,
                 response.original_title,
                 response.overview,
-                BuildConfig.BASE_IMG_URL + response.poster_path
+                BuildConfig.BASE_IMG_URL + response.poster_path,
+                0
             )
             movieResults.add(movieTvEntity)
         }
@@ -36,11 +36,28 @@ object DataDummy {
                 response.id,
                 response.original_name,
                 response.overview,
-                BuildConfig.BASE_IMG_URL + response.poster_path
+                BuildConfig.BASE_IMG_URL + response.poster_path,
+                1
             )
             tvResults.add(movieTvEntity)
         }
         return tvResults
+    }
+
+    fun generateRemoteDummyMovie(): MovieResponse {
+        return Gson().fromJson(JsonStringData().loadMovie(), MovieResponse::class.java)
+    }
+
+    fun generateRemoteDummyTv(): TvResponse {
+        return Gson().fromJson(JsonStringData().loadTv(), TvResponse::class.java)
+    }
+
+    fun generateDummyMovieTvAndSetFavorite(
+        movieTvEntity: MovieTvEntity,
+        favorite: Boolean
+    ): MovieTvEntity {
+        movieTvEntity.favorite = favorite
+        return movieTvEntity
     }
 
 
