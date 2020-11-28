@@ -5,9 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import com.nhaarman.mockitokotlin2.verify
-import com.rizalfahrudin.moviecatalogue.data.source.MovieTvRepository
-import com.rizalfahrudin.moviecatalogue.data.source.local.entity.MovieTvEntity
-import com.rizalfahrudin.moviecatalogue.vo.Resource
+import com.rizalfahrudin.moviecatalogue.core.data.source.MovieTvRepository
+import com.rizalfahrudin.moviecatalogue.core.data.source.local.entity.MovieTvEntity
+import com.rizalfahrudin.moviecatalogue.core.vo.Resource
+import com.rizalfahrudin.moviecatalogue.main.content.MovieTvViewModel
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
@@ -36,7 +37,10 @@ class MovieTvViewModelTest {
 
     @Before
     fun setUp() {
-        viewModel = MovieTvViewModel(movieTvRepository)
+        viewModel =
+            MovieTvViewModel(
+                movieTvRepository
+            )
     }
 
     @Test

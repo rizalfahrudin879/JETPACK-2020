@@ -1,11 +1,9 @@
-package com.rizalfahrudin.moviecatalogue.data.source
+package com.rizalfahrudin.moviecatalogue.core.data.source
 
 import androidx.lifecycle.LiveData
-import androidx.paging.LivePagedListBuilder
-import androidx.paging.PagedList
+import androidx.lifecycle.Transformations
 import com.rizalfahrudin.moviecatalogue.BuildConfig.BASE_IMG_URL
 import com.rizalfahrudin.moviecatalogue.core.data.NetworkBoundResource
-import com.rizalfahrudin.moviecatalogue.core.data.source.MovieTvDataSource
 import com.rizalfahrudin.moviecatalogue.core.data.source.local.LocalDataSource
 import com.rizalfahrudin.moviecatalogue.core.data.source.local.entity.MovieTvEntity
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.ApiResponse
@@ -14,33 +12,50 @@ import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.MovieEn
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.MovieResponse
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.TvEntityResponse
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.TvResponse
+import com.rizalfahrudin.moviecatalogue.core.domain.model.MovieTv
+import com.rizalfahrudin.moviecatalogue.core.domain.repository.ImplMovieTvRepository
 import com.rizalfahrudin.moviecatalogue.core.utils.AppExecutor
+import com.rizalfahrudin.moviecatalogue.core.utils.DataMapper
 import com.rizalfahrudin.moviecatalogue.core.vo.Resource
 
-class FakeMovieTvRepository(
+class MovieTvRepository private constructor(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource,
     private val appExecutor: AppExecutor
-) : MovieTvDataSource {
+) : ImplMovieTvRepository {
 
-    override fun getDataMovieTv(typePosition: Int): LiveData<Resource<PagedList<MovieTvEntity>>> {
+    companion object {
+        @Volatile
+        private var instance: MovieTvRepository? = null
+
+        fun getInstance(
+            remoteDataSource: RemoteDataSource,
+            localDataSource: LocalDataSource,
+            appExecutor: AppExecutor
+        ): MovieTvRepository =
+            instance
+                ?: synchronized(this) {
+                    instance
+                        ?: MovieTvRepository(
+                            remoteDataSource,
+                            localDataSource,
+                            appExecutor
+                        )
+                }
+    }
+
+    override fun getDataMovieTv(typePosition: Int): LiveData<Resource<List<MovieTv>>> {
         return when (typePosition) {
             0 -> {
                 object :
-                    NetworkBoundResource<PagedList<MovieTvEntity>, MovieResponse>(appExecutor) {
-                    override fun loadFromDB(): LiveData<PagedList<MovieTvEntity>> {
-                        val config = PagedList.Config.Builder()
-                            .setEnablePlaceholders(false)
-                            .setInitialLoadSizeHint(4)
-                            .setPageSize(4)
-                            .build()
-                        return LivePagedListBuilder(
-                            localDataSource.getMovieTv(typePosition),
-                            config
-                        ).build()
+                    NetworkBoundResource<List<MovieTv>, MovieResponse>(appExecutor) {
+                    override fun loadFromDB(): LiveData<List<MovieTv>> {
+                        return Transformations.map(localDataSource.getMovieTv(0)) {
+                            DataMapper.mapEntitiesToDomain(it)
+                        }
                     }
 
-                    override fun showFetchData(data: PagedList<MovieTvEntity>?): Boolean {
+                    override fun showFetchData(data: List<MovieTv>?): Boolean {
                         return data == null || data.isEmpty()
                     }
 
@@ -66,17 +81,14 @@ class FakeMovieTvRepository(
                 }.asLiveData()
             }
             else -> {
-                object : NetworkBoundResource<PagedList<MovieTvEntity>, TvResponse>(appExecutor) {
-                    override fun loadFromDB(): LiveData<PagedList<MovieTvEntity>> {
-                        val config = PagedList.Config.Builder()
-                            .setEnablePlaceholders(false)
-                            .setInitialLoadSizeHint(4)
-                            .setPageSize(4)
-                            .build()
-                        return LivePagedListBuilder(localDataSource.getMovieTv(typePosition), config).build()
+                object : NetworkBoundResource<List<MovieTv>, TvResponse>(appExecutor) {
+                    override fun loadFromDB(): LiveData<List<MovieTv>> {
+                        return Transformations.map(localDataSource.getMovieTv(1)) {
+                            DataMapper.mapEntitiesToDomain(it)
+                        }
                     }
 
-                    override fun showFetchData(data: PagedList<MovieTvEntity>?): Boolean {
+                    override fun showFetchData(data: List<MovieTv>?): Boolean {
                         return data == null || data.isEmpty()
                     }
 
@@ -107,15 +119,17 @@ class FakeMovieTvRepository(
     override fun getDataDetailMovieTv(
         typePosition: Int,
         id: Int
-    ): LiveData<Resource<MovieTvEntity>> {
-        return when(typePosition) {
+    ): LiveData<Resource<MovieTv>> {
+        return when (typePosition) {
             0 -> {
-                object : NetworkBoundResource<MovieTvEntity, MovieEntityResponse>(appExecutor) {
-                    override fun loadFromDB(): LiveData<MovieTvEntity> {
-                        return localDataSource.getMovieTvById(id)
+                object : NetworkBoundResource<MovieTv, MovieEntityResponse>(appExecutor) {
+                    override fun loadFromDB(): LiveData<MovieTv> {
+                        return Transformations.map(localDataSource.getMovieTvById(id)) {
+                            DataMapper.mapEntityToDomain(it)
+                        }
                     }
 
-                    override fun showFetchData(data: MovieTvEntity?): Boolean {
+                    override fun showFetchData(data: MovieTv?): Boolean {
                         return data == null
                     }
 
@@ -138,12 +152,14 @@ class FakeMovieTvRepository(
                 }.asLiveData()
             }
             else -> {
-                object : NetworkBoundResource<MovieTvEntity, TvEntityResponse>(appExecutor) {
-                    override fun loadFromDB(): LiveData<MovieTvEntity> {
-                        return localDataSource.getMovieTvById(id)
+                object : NetworkBoundResource<MovieTv, TvEntityResponse>(appExecutor) {
+                    override fun loadFromDB(): LiveData<MovieTv> {
+                        return Transformations.map(localDataSource.getMovieTvById(id)) {
+                            DataMapper.mapEntityToDomain(it)
+                        }
                     }
 
-                    override fun showFetchData(data: MovieTvEntity?): Boolean {
+                    override fun showFetchData(data: MovieTv?): Boolean {
                         return data == null
                     }
 
@@ -168,19 +184,17 @@ class FakeMovieTvRepository(
         }
     }
 
-    override fun setDataMovieTvFavorite(movieTvEntity: MovieTvEntity, state: Boolean) {
+    override fun setDataMovieTvFavorite(movieTv: MovieTv, state: Boolean) {
+        val movieTvEntity = DataMapper.mapDomainToEntity(movieTv)
         return appExecutor.diskIO().execute {
             localDataSource.setMovieTvFavorite(movieTvEntity, state)
         }
     }
 
-    override fun getDataMovieTvFavorite(typePosition: Int): LiveData<PagedList<MovieTvEntity>> {
-        val config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setInitialLoadSizeHint(4)
-            .setPageSize(4)
-            .build()
-        return LivePagedListBuilder(localDataSource.getFavoriteMovieTv(typePosition), config).build()
+    override fun getDataMovieTvFavorite(typePosition: Int): LiveData<List<MovieTv>> {
+        return Transformations.map(localDataSource.getFavoriteMovieTv(typePosition)) {
+            DataMapper.mapEntitiesToDomain(it)
+        }
     }
 
 }

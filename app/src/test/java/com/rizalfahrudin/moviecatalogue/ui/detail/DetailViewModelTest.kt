@@ -4,10 +4,11 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.nhaarman.mockitokotlin2.verify
-import com.rizalfahrudin.moviecatalogue.data.source.MovieTvRepository
-import com.rizalfahrudin.moviecatalogue.data.source.local.entity.MovieTvEntity
-import com.rizalfahrudin.moviecatalogue.utils.DataDummy
-import com.rizalfahrudin.moviecatalogue.vo.Resource
+import com.rizalfahrudin.moviecatalogue.core.data.source.MovieTvRepository
+import com.rizalfahrudin.moviecatalogue.core.data.source.local.entity.MovieTvEntity
+import com.rizalfahrudin.moviecatalogue.core.utils.DataDummy
+import com.rizalfahrudin.moviecatalogue.core.vo.Resource
+import com.rizalfahrudin.moviecatalogue.detail.DetailViewModel
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -38,7 +39,9 @@ class DetailViewModelTest {
 
     @Before
     fun setUp() {
-        viewModel = DetailViewModel(movieTvRepository)
+        viewModel = DetailViewModel(
+            movieTvRepository
+        )
     }
 
     @Test

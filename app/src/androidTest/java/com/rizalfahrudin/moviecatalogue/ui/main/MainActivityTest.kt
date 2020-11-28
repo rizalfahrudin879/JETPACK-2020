@@ -8,8 +8,9 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.rule.ActivityTestRule
+import com.rizalfahrudin.moviecatalogue.MainActivity
 import com.rizalfahrudin.moviecatalogue.R
-import com.rizalfahrudin.moviecatalogue.utils.EspressoIdlingResource
+import com.rizalfahrudin.moviecatalogue.core.utils.EspressoIdlingResource
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
