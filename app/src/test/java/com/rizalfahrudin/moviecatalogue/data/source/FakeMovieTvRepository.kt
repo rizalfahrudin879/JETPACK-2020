@@ -8,7 +8,6 @@ import com.rizalfahrudin.moviecatalogue.core.data.NetworkBoundResource
 import com.rizalfahrudin.moviecatalogue.core.data.source.MovieTvDataSource
 import com.rizalfahrudin.moviecatalogue.core.data.source.local.LocalDataSource
 import com.rizalfahrudin.moviecatalogue.core.data.source.local.entity.MovieTvEntity
-import com.rizalfahrudin.moviecatalogue.core.data.source.remote.ApiResponse
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.RemoteDataSource
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.MovieEntityResponse
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.MovieResponse

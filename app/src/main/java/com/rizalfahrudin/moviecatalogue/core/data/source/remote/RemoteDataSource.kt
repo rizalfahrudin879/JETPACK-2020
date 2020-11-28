@@ -1,24 +1,20 @@
 package com.rizalfahrudin.moviecatalogue.core.data.source.remote
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.gson.Gson
-import com.rizalfahrudin.moviecatalogue.core.data.source.remote.api.RemoteApiRepository
-import com.rizalfahrudin.moviecatalogue.core.data.source.remote.api.RemoteDataApi
+import com.rizalfahrudin.moviecatalogue.core.data.source.remote.network.ApiResponse
+import com.rizalfahrudin.moviecatalogue.core.data.source.remote.network.ApiService
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.MovieEntityResponse
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.MovieResponse
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.TvEntityResponse
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.TvResponse
-import com.rizalfahrudin.moviecatalogue.core.utils.CoroutineContextProvider
-import com.rizalfahrudin.moviecatalogue.core.utils.EspressoIdlingResource
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class RemoteDataSource private constructor(
-    private val remoteApiRepository: RemoteApiRepository,
-    private val remoteDataApi: RemoteDataApi,
-    private val gson: Gson,
-    private val context: CoroutineContextProvider = CoroutineContextProvider()
+    private val apiService: ApiService
 ){
 
     companion object {
@@ -26,94 +22,99 @@ class RemoteDataSource private constructor(
         private var instance: RemoteDataSource? = null
 
         fun getInstance(
-            remoteApiRepository: RemoteApiRepository,
-            remoteDataApi: RemoteDataApi
+            apiService: ApiService
         ): RemoteDataSource =
             instance
                 ?: synchronized(this) {
                     instance
-                        ?: RemoteDataSource(
-                            remoteApiRepository,
-                            remoteDataApi,
-                            Gson(),
-                            CoroutineContextProvider()
-                        )
+                        ?: RemoteDataSource(apiService)
                 }
     }
 
     fun getMovie(): LiveData<ApiResponse<MovieResponse>> {
-        EspressoIdlingResource.increment()
-        val resultMovies = MutableLiveData<ApiResponse<MovieResponse>>()
-        GlobalScope.launch(context.main) {
-            val movieResponse = gson.fromJson(
-                remoteApiRepository.doRequestAsync(
-                    remoteDataApi.getMovie()
-                ),
-                MovieResponse::class.java
-            )
-            resultMovies.value =
-                ApiResponse.success(
-                    movieResponse
-                )
-            EspressoIdlingResource.decrement()
-        }
-        return resultMovies
+        val resultsMovie = MutableLiveData<ApiResponse<MovieResponse>>()
+
+        val client = apiService.getMovie()
+        client.enqueue(object : Callback<MovieResponse> {
+            override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
+                val dataArray = response.body()
+                resultsMovie.value =
+                    if (dataArray != null) ApiResponse.Success(dataArray) else ApiResponse.Empty
+            }
+
+            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
+                resultsMovie.value = ApiResponse.Error(t.message.toString())
+                Log.e("RemoteDataSource", t.message.toString())
+            }
+
+        })
+        return resultsMovie
     }
 
     fun getTv(): LiveData<ApiResponse<TvResponse>> {
-        EspressoIdlingResource.increment()
-        val resultTv = MutableLiveData<ApiResponse<TvResponse>>()
-        GlobalScope.launch(context.main) {
-            val tvResponse = gson.fromJson(
-                remoteApiRepository.doRequestAsync(
-                    remoteDataApi.getTv()
-                ),
-                TvResponse::class.java
-            )
-            resultTv.value =
-                ApiResponse.success(
-                    tvResponse
-                )
-            EspressoIdlingResource.decrement()
-        }
-        return resultTv
+        val resultsTv = MutableLiveData<ApiResponse<TvResponse>>()
+
+        val client = apiService.getTv()
+        client.enqueue(object : Callback<TvResponse> {
+            override fun onResponse(call: Call<TvResponse>, response: Response<TvResponse>) {
+                val dataArray = response.body()
+                resultsTv.value =
+                    if (dataArray != null) ApiResponse.Success(dataArray) else ApiResponse.Empty
+            }
+
+            override fun onFailure(call: Call<TvResponse>, t: Throwable) {
+                resultsTv.value = ApiResponse.Error(t.message.toString())
+                Log.e("RemoteDataSource", t.message.toString())
+            }
+
+        })
+        return resultsTv
     }
 
     fun getMovieById(id: Int): LiveData<ApiResponse<MovieEntityResponse>> {
-        EspressoIdlingResource.increment()
         val resultMovie = MutableLiveData<ApiResponse<MovieEntityResponse>>()
-        GlobalScope.launch(context.main) {
-            val movieResponse = gson.fromJson(
-                remoteApiRepository.doRequestAsync(
-                    remoteDataApi.getMovieById(id)
-                ),
-                MovieEntityResponse::class.java
-            )
-            resultMovie.value =
-                ApiResponse.success(
-                    movieResponse
-                )
-            EspressoIdlingResource.decrement()
-        }
+
+        val client = apiService.getMovieById(id)
+        client.enqueue(object : Callback<MovieEntityResponse> {
+            override fun onResponse(
+                call: Call<MovieEntityResponse>,
+                response: Response<MovieEntityResponse>
+            ) {
+                val dataArray = response.body()
+                resultMovie.value =
+                    if (dataArray != null) ApiResponse.Success(dataArray) else ApiResponse.Empty
+            }
+
+            override fun onFailure(call: Call<MovieEntityResponse>, t: Throwable) {
+                resultMovie.value = ApiResponse.Error(t.message.toString())
+                Log.e("RemoteDataSource", t.message.toString())
+            }
+
+        })
         return resultMovie
     }
 
     fun getTvById(id: Int): LiveData<ApiResponse<TvEntityResponse>> {
-        EspressoIdlingResource.increment()
         val resultTv = MutableLiveData<ApiResponse<TvEntityResponse>>()
-        GlobalScope.launch(context.main) {
-            val tvResponse = gson.fromJson(
-                remoteApiRepository.doRequestAsync(
-                    remoteDataApi.getTveById(id)
-                ),
-                TvEntityResponse::class.java
-            )
-            resultTv.value =
-                ApiResponse.success(
-                    tvResponse
-                )
-            EspressoIdlingResource.decrement()
-        }
+
+        val client = apiService.getTvById(id)
+        client.enqueue(object : Callback<TvEntityResponse> {
+            override fun onResponse(
+                call: Call<TvEntityResponse>,
+                response: Response<TvEntityResponse>
+            ) {
+                val dataArray = response.body()
+                resultTv.value =
+                    if (dataArray != null) ApiResponse.Success(dataArray) else ApiResponse.Empty
+            }
+
+            override fun onFailure(call: Call<TvEntityResponse>, t: Throwable) {
+                resultTv.value = ApiResponse.Error(t.message.toString())
+                Log.e("RemoteDataSource", t.message.toString())
+            }
+
+        })
         return resultTv
     }
+
 }

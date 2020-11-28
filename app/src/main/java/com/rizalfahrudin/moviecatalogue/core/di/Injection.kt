@@ -5,8 +5,7 @@ import com.rizalfahrudin.moviecatalogue.core.data.source.MovieTvRepository
 import com.rizalfahrudin.moviecatalogue.core.data.source.local.LocalDataSource
 import com.rizalfahrudin.moviecatalogue.core.data.source.local.room.MovieTvDatabase
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.RemoteDataSource
-import com.rizalfahrudin.moviecatalogue.core.data.source.remote.api.RemoteApiRepository
-import com.rizalfahrudin.moviecatalogue.core.data.source.remote.api.RemoteDataApi
+import com.rizalfahrudin.moviecatalogue.core.data.source.remote.network.ApiConfig
 import com.rizalfahrudin.moviecatalogue.core.domain.repository.ImplMovieTvRepository
 import com.rizalfahrudin.moviecatalogue.core.domain.usecase.MovieTvInteractor
 import com.rizalfahrudin.moviecatalogue.core.domain.usecase.MovieTvUseCase
@@ -18,8 +17,7 @@ object Injection {
         val appExecutor =
             AppExecutor()
         val remoteDataSource = RemoteDataSource.getInstance(
-            RemoteApiRepository(),
-            RemoteDataApi()
+            ApiConfig.provideApiService()
         )
         val localDataSource = LocalDataSource.getInstance(database.movieTvDao())
         return MovieTvRepository.getInstance(remoteDataSource, localDataSource, appExecutor)

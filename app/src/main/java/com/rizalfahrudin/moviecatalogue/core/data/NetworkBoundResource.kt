@@ -2,8 +2,7 @@ package com.rizalfahrudin.moviecatalogue.core.data
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import com.rizalfahrudin.moviecatalogue.core.data.source.remote.ApiResponse
-import com.rizalfahrudin.moviecatalogue.core.data.source.remote.StatusResponse
+import com.rizalfahrudin.moviecatalogue.core.data.source.remote.network.ApiResponse
 import com.rizalfahrudin.moviecatalogue.core.utils.AppExecutor
 import com.rizalfahrudin.moviecatalogue.core.vo.Resource
 
@@ -44,10 +43,10 @@ abstract class NetworkBoundResource<ResultType, RequestType>(private val mExecut
         result.addSource(apiResponse) {response ->
             result.removeSource(apiResponse)
             result.removeSource(dbSource)
-            when(response.status) {
-                StatusResponse.SUCCESS -> {
+            when (response) {
+                is ApiResponse.Success -> {
                     mExecutor.diskIO().execute {
-                        saveCallResult(response.body)
+                        saveCallResult(response.data)
                         mExecutor.mainThread().execute {
                             result.addSource(loadFromDB()) { newData ->
                                 result.value = Resource.success(newData)
@@ -55,17 +54,17 @@ abstract class NetworkBoundResource<ResultType, RequestType>(private val mExecut
                         }
                     }
                 }
-                StatusResponse.EMPTY -> {
+                is ApiResponse.Empty -> {
                     mExecutor.mainThread().execute {
                         result.addSource(loadFromDB()) { newData ->
                             result.value = Resource.success(newData)
                         }
                     }
                 }
-                StatusResponse.ERROR -> {
+                is ApiResponse.Error -> {
                     onFetchFailed()
                     result.addSource(dbSource) { newData ->
-                        result.value = Resource.error(newData, response.message)
+                        result.value = Resource.error(newData, response.errorMessage)
                     }
                 }
             }

@@ -6,8 +6,8 @@ import com.rizalfahrudin.moviecatalogue.BuildConfig.BASE_IMG_URL
 import com.rizalfahrudin.moviecatalogue.core.data.NetworkBoundResource
 import com.rizalfahrudin.moviecatalogue.core.data.source.local.LocalDataSource
 import com.rizalfahrudin.moviecatalogue.core.data.source.local.entity.MovieTvEntity
-import com.rizalfahrudin.moviecatalogue.core.data.source.remote.ApiResponse
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.RemoteDataSource
+import com.rizalfahrudin.moviecatalogue.core.data.source.remote.network.ApiResponse
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.MovieEntityResponse
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.MovieResponse
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.TvEntityResponse
