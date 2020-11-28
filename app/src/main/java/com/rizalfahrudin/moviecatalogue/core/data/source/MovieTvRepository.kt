@@ -1,7 +1,5 @@
 package com.rizalfahrudin.moviecatalogue.core.data.source
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
 import com.rizalfahrudin.moviecatalogue.BuildConfig.BASE_IMG_URL
 import com.rizalfahrudin.moviecatalogue.core.data.NetworkBoundResource
 import com.rizalfahrudin.moviecatalogue.core.data.source.local.LocalDataSource
@@ -17,6 +15,8 @@ import com.rizalfahrudin.moviecatalogue.core.domain.repository.ImplMovieTvReposi
 import com.rizalfahrudin.moviecatalogue.core.utils.AppExecutor
 import com.rizalfahrudin.moviecatalogue.core.utils.DataMapper
 import com.rizalfahrudin.moviecatalogue.core.vo.Resource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class MovieTvRepository private constructor(
     private val remoteDataSource: RemoteDataSource,
@@ -44,26 +44,25 @@ class MovieTvRepository private constructor(
                 }
     }
 
-    override fun getDataMovieTv(typePosition: Int): LiveData<Resource<List<MovieTv>>> {
+    override fun getDataMovieTv(typePosition: Int): Flow<Resource<List<MovieTv>>> {
         return when (typePosition) {
             0 -> {
                 object :
                     NetworkBoundResource<List<MovieTv>, MovieResponse>(appExecutor) {
-                    override fun loadFromDB(): LiveData<List<MovieTv>> {
-                        return Transformations.map(localDataSource.getMovieTv(0)) {
-                            DataMapper.mapEntitiesToDomain(it)
-                        }
+                    override fun loadFromDB(): Flow<List<MovieTv>> {
+                        return localDataSource.getMovieTv(0)
+                            .map { DataMapper.mapEntitiesToDomain(it) }
                     }
 
                     override fun showFetchData(data: List<MovieTv>?): Boolean {
                         return data == null || data.isEmpty()
                     }
 
-                    override fun createCall(): LiveData<ApiResponse<MovieResponse>> {
+                    override suspend fun createCall(): Flow<ApiResponse<MovieResponse>> {
                         return remoteDataSource.getMovie()
                     }
 
-                    override fun saveCallResult(data: MovieResponse) {
+                    override suspend fun saveCallResult(data: MovieResponse) {
                         val movieList = ArrayList<MovieTvEntity>()
                         for (response in data.movie) {
                             val movie =
@@ -78,25 +77,24 @@ class MovieTvRepository private constructor(
                         }
                         localDataSource.insertListMovieTv(movieList)
                     }
-                }.asLiveData()
+                }.asFlow()
             }
             else -> {
                 object : NetworkBoundResource<List<MovieTv>, TvResponse>(appExecutor) {
-                    override fun loadFromDB(): LiveData<List<MovieTv>> {
-                        return Transformations.map(localDataSource.getMovieTv(1)) {
-                            DataMapper.mapEntitiesToDomain(it)
-                        }
+                    override fun loadFromDB(): Flow<List<MovieTv>> {
+                        return localDataSource.getMovieTv(1)
+                            .map { DataMapper.mapEntitiesToDomain(it) }
                     }
 
                     override fun showFetchData(data: List<MovieTv>?): Boolean {
                         return data == null || data.isEmpty()
                     }
 
-                    override fun createCall(): LiveData<ApiResponse<TvResponse>> {
+                    override suspend fun createCall(): Flow<ApiResponse<TvResponse>> {
                         return remoteDataSource.getTv()
                     }
 
-                    override fun saveCallResult(data: TvResponse) {
+                    override suspend fun saveCallResult(data: TvResponse) {
                         val movieList = ArrayList<MovieTvEntity>()
                         for (response in data.tv) {
                             val movie =
@@ -111,7 +109,7 @@ class MovieTvRepository private constructor(
                         }
                         localDataSource.insertListMovieTv(movieList)
                     }
-                }.asLiveData()
+                }.asFlow()
             }
         }
     }
@@ -119,12 +117,12 @@ class MovieTvRepository private constructor(
     override fun getDataDetailMovieTv(
         typePosition: Int,
         id: Int
-    ): LiveData<Resource<MovieTv>> {
+    ): Flow<Resource<MovieTv>> {
         return when (typePosition) {
             0 -> {
                 object : NetworkBoundResource<MovieTv, MovieEntityResponse>(appExecutor) {
-                    override fun loadFromDB(): LiveData<MovieTv> {
-                        return Transformations.map(localDataSource.getMovieTvById(id)) {
+                    override fun loadFromDB(): Flow<MovieTv> {
+                        return localDataSource.getMovieTvById(id).map {
                             DataMapper.mapEntityToDomain(it)
                         }
                     }
@@ -133,11 +131,11 @@ class MovieTvRepository private constructor(
                         return data == null
                     }
 
-                    override fun createCall(): LiveData<ApiResponse<MovieEntityResponse>> {
+                    override suspend fun createCall(): Flow<ApiResponse<MovieEntityResponse>> {
                         return remoteDataSource.getMovieById(id)
                     }
 
-                    override fun saveCallResult(data: MovieEntityResponse) {
+                    override suspend fun saveCallResult(data: MovieEntityResponse) {
                         val movie =
                             MovieTvEntity(
                                 data.id,
@@ -149,12 +147,12 @@ class MovieTvRepository private constructor(
                             )
                         localDataSource.insertMovieTv(movie)
                     }
-                }.asLiveData()
+                }.asFlow()
             }
             else -> {
                 object : NetworkBoundResource<MovieTv, TvEntityResponse>(appExecutor) {
-                    override fun loadFromDB(): LiveData<MovieTv> {
-                        return Transformations.map(localDataSource.getMovieTvById(id)) {
+                    override fun loadFromDB(): Flow<MovieTv> {
+                        return localDataSource.getMovieTvById(id).map {
                             DataMapper.mapEntityToDomain(it)
                         }
                     }
@@ -163,11 +161,11 @@ class MovieTvRepository private constructor(
                         return data == null
                     }
 
-                    override fun createCall(): LiveData<ApiResponse<TvEntityResponse>> {
+                    override suspend fun createCall(): Flow<ApiResponse<TvEntityResponse>> {
                         return remoteDataSource.getTvById(id)
                     }
 
-                    override fun saveCallResult(data: TvEntityResponse) {
+                    override suspend fun saveCallResult(data: TvEntityResponse) {
                         val movie =
                             MovieTvEntity(
                                 data.id,
@@ -179,7 +177,7 @@ class MovieTvRepository private constructor(
                             )
                         localDataSource.insertMovieTv(movie)
                     }
-                }.asLiveData()
+                }.asFlow()
             }
         }
     }
@@ -191,8 +189,8 @@ class MovieTvRepository private constructor(
         }
     }
 
-    override fun getDataMovieTvFavorite(typePosition: Int): LiveData<List<MovieTv>> {
-        return Transformations.map(localDataSource.getFavoriteMovieTv(typePosition)) {
+    override fun getDataMovieTvFavorite(typePosition: Int): Flow<List<MovieTv>> {
+        return localDataSource.getFavoriteMovieTv(typePosition).map {
             DataMapper.mapEntitiesToDomain(it)
         }
     }

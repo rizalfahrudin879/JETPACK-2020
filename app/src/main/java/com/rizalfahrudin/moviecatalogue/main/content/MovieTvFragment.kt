@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.rizalfahrudin.moviecatalogue.R
 import com.rizalfahrudin.moviecatalogue.core.ui.MovieTvAdapter
 import com.rizalfahrudin.moviecatalogue.core.ui.ViewModelFactory
-import com.rizalfahrudin.moviecatalogue.core.vo.Status
+import com.rizalfahrudin.moviecatalogue.core.vo.Resource
 import com.rizalfahrudin.moviecatalogue.detail.DetailActivity
 import com.rizalfahrudin.moviecatalogue.detail.DetailActivity.Companion.ID
 import com.rizalfahrudin.moviecatalogue.detail.DetailActivity.Companion.POSITION
@@ -60,14 +60,14 @@ class MovieTvFragment : Fragment() {
             if (pageCode == MAIN) {
                 viewModel.getDataMovieTv().observe(this, { movieTv ->
                     if (movieTv != null) {
-                        when (movieTv.status) {
-                            Status.LOADING -> loading_main.visibility = View.VISIBLE
-                            Status.SUCCESS -> {
+                        when (movieTv) {
+                            is Resource.Loading -> loading_main.visibility = View.VISIBLE
+                            is Resource.Success -> {
                                 loading_main.visibility = View.GONE
                                 movieTvAdapter.setMovieTv(movieTv.data)
                                 movieTvAdapter.notifyDataSetChanged()
                             }
-                            Status.ERROR -> {
+                            is Resource.Error -> {
                                 loading_main.visibility = View.GONE
                             }
                         }

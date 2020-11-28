@@ -1,9 +1,6 @@
 package com.rizalfahrudin.moviecatalogue.detail
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.rizalfahrudin.moviecatalogue.core.domain.model.MovieTv
 import com.rizalfahrudin.moviecatalogue.core.domain.usecase.MovieTvUseCase
 import com.rizalfahrudin.moviecatalogue.core.vo.Resource
@@ -20,7 +17,7 @@ class DetailViewModel(private val movieTvUseCase: MovieTvUseCase) : ViewModel() 
     var movieTv: LiveData<Resource<MovieTv>> =
         Transformations.switchMap(position) { mPosition ->
             Transformations.switchMap(id) { mId ->
-                movieTvUseCase.getDataDetailMovieTv(mPosition, mId)
+                movieTvUseCase.getDataDetailMovieTv(mPosition, mId).asLiveData()
             }
         }
 

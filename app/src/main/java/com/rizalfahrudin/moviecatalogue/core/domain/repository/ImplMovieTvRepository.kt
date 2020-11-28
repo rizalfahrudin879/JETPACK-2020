@@ -1,12 +1,12 @@
 package com.rizalfahrudin.moviecatalogue.core.domain.repository
 
-import androidx.lifecycle.LiveData
 import com.rizalfahrudin.moviecatalogue.core.domain.model.MovieTv
 import com.rizalfahrudin.moviecatalogue.core.vo.Resource
+import kotlinx.coroutines.flow.Flow
 
 interface ImplMovieTvRepository {
-    fun getDataMovieTv(typePosition: Int): LiveData<Resource<List<MovieTv>>>
-    fun getDataDetailMovieTv(typePosition: Int, id: Int): LiveData<Resource<MovieTv>>
+    fun getDataMovieTv(typePosition: Int): Flow<Resource<List<MovieTv>>>
+    fun getDataDetailMovieTv(typePosition: Int, id: Int): Flow<Resource<MovieTv>>
     fun setDataMovieTvFavorite(movieTv: MovieTv, state: Boolean)
-    fun getDataMovieTvFavorite(typePosition: Int): LiveData<List<MovieTv>>
+    fun getDataMovieTvFavorite(typePosition: Int): Flow<List<MovieTv>>
 }

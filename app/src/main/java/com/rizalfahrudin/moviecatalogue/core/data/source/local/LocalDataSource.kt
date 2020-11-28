@@ -1,8 +1,8 @@
 package com.rizalfahrudin.moviecatalogue.core.data.source.local
 
-import androidx.lifecycle.LiveData
 import com.rizalfahrudin.moviecatalogue.core.data.source.local.entity.MovieTvEntity
 import com.rizalfahrudin.moviecatalogue.core.data.source.local.room.MovieTvDao
+import kotlinx.coroutines.flow.Flow
 
 
 class LocalDataSource private constructor(private val mMovieTvDao: MovieTvDao){
@@ -17,23 +17,23 @@ class LocalDataSource private constructor(private val mMovieTvDao: MovieTvDao){
         }
     }
 
-    fun getMovieTv(type: Int): LiveData<List<MovieTvEntity>> {
+    fun getMovieTv(type: Int): Flow<List<MovieTvEntity>> {
         return mMovieTvDao.getMovieTv(type)
     }
 
-    fun getMovieTvById(id: Int): LiveData<MovieTvEntity> {
+    fun getMovieTvById(id: Int): Flow<MovieTvEntity> {
         return mMovieTvDao.getMovieTvById(id)
     }
 
-    fun getFavoriteMovieTv(type: Int): LiveData<List<MovieTvEntity>> {
+    fun getFavoriteMovieTv(type: Int): Flow<List<MovieTvEntity>> {
         return mMovieTvDao.getFavoriteMovieTv(type)
     }
 
-    fun insertListMovieTv(movieTvEntities: List<MovieTvEntity>) {
+    suspend fun insertListMovieTv(movieTvEntities: List<MovieTvEntity>) {
         mMovieTvDao.insertListMovieTv(movieTvEntities)
     }
 
-    fun insertMovieTv(movieTvEntities: MovieTvEntity) {
+    suspend fun insertMovieTv(movieTvEntities: MovieTvEntity) {
         mMovieTvDao.insertMovieTv(movieTvEntities)
     }
 

@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.rizalfahrudin.moviecatalogue.R
 import com.rizalfahrudin.moviecatalogue.core.ui.ViewModelFactory
-import com.rizalfahrudin.moviecatalogue.core.vo.Status
+import com.rizalfahrudin.moviecatalogue.core.vo.Resource
 import kotlinx.android.synthetic.main.activity_detail.*
 
 class DetailActivity : AppCompatActivity() {
@@ -44,9 +44,9 @@ class DetailActivity : AppCompatActivity() {
 
         viewModel.movieTv.observe(this, {
             if (it != null) {
-                when (it.status) {
-                    Status.LOADING -> loading_detail.visibility = View.VISIBLE
-                    Status.SUCCESS -> {
+                when (it) {
+                    is Resource.Loading -> loading_detail.visibility = View.VISIBLE
+                    is Resource.Success -> {
                         loading_detail.visibility = View.GONE
                         tv_title_detail.text = it.data?.title
                         tv_description_detail.text = it.data?.description
@@ -55,7 +55,7 @@ class DetailActivity : AppCompatActivity() {
                             .apply(RequestOptions())
                             .into(img_poster_detail)
                     }
-                    Status.ERROR -> loading_detail.visibility = View.GONE
+                    is Resource.Error -> loading_detail.visibility = View.GONE
                 }
             }
         })
@@ -67,8 +67,8 @@ class DetailActivity : AppCompatActivity() {
 
         viewModel.movieTv.observe(this, {
             if (it != null) {
-                when (it.status) {
-                    Status.SUCCESS -> {
+                when (it) {
+                    is Resource.Success -> {
                         if (it.data != null) {
                             val state = it.data.favorite
                             setFavoriteState(state)

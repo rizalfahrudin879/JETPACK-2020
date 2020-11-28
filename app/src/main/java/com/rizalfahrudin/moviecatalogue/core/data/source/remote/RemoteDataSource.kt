@@ -1,17 +1,14 @@
 package com.rizalfahrudin.moviecatalogue.core.data.source.remote
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.network.ApiResponse
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.network.ApiService
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.MovieEntityResponse
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.MovieResponse
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.TvEntityResponse
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.TvResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class RemoteDataSource private constructor(
     private val apiService: ApiService
@@ -31,90 +28,60 @@ class RemoteDataSource private constructor(
                 }
     }
 
-    fun getMovie(): LiveData<ApiResponse<MovieResponse>> {
-        val resultsMovie = MutableLiveData<ApiResponse<MovieResponse>>()
-
-        val client = apiService.getMovie()
-        client.enqueue(object : Callback<MovieResponse> {
-            override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
-                val dataArray = response.body()
-                resultsMovie.value =
-                    if (dataArray != null) ApiResponse.Success(dataArray) else ApiResponse.Empty
+    suspend fun getMovie(): Flow<ApiResponse<MovieResponse>> {
+        return flow {
+            try {
+                val response = apiService.getMovie()
+                if (response.movie.isNotEmpty()) {
+                    emit(ApiResponse.Success(response))
+                } else {
+                    emit(ApiResponse.Empty)
+                }
+            } catch (e: Exception) {
+                emit(ApiResponse.Error(e.toString()))
+                Log.e("RemoteDataSource", e.toString())
             }
-
-            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
-                resultsMovie.value = ApiResponse.Error(t.message.toString())
-                Log.e("RemoteDataSource", t.message.toString())
-            }
-
-        })
-        return resultsMovie
+        }
     }
 
-    fun getTv(): LiveData<ApiResponse<TvResponse>> {
-        val resultsTv = MutableLiveData<ApiResponse<TvResponse>>()
-
-        val client = apiService.getTv()
-        client.enqueue(object : Callback<TvResponse> {
-            override fun onResponse(call: Call<TvResponse>, response: Response<TvResponse>) {
-                val dataArray = response.body()
-                resultsTv.value =
-                    if (dataArray != null) ApiResponse.Success(dataArray) else ApiResponse.Empty
+    suspend fun getTv(): Flow<ApiResponse<TvResponse>> {
+        return flow {
+            try {
+                val response = apiService.getTv()
+                if (response.tv.isNotEmpty()) {
+                    emit(ApiResponse.Success(response))
+                } else {
+                    emit(ApiResponse.Empty)
+                }
+            } catch (e: Exception) {
+                emit(ApiResponse.Error(e.toString()))
+                Log.e("RemoteDataSource", e.toString())
             }
-
-            override fun onFailure(call: Call<TvResponse>, t: Throwable) {
-                resultsTv.value = ApiResponse.Error(t.message.toString())
-                Log.e("RemoteDataSource", t.message.toString())
-            }
-
-        })
-        return resultsTv
+        }
     }
 
-    fun getMovieById(id: Int): LiveData<ApiResponse<MovieEntityResponse>> {
-        val resultMovie = MutableLiveData<ApiResponse<MovieEntityResponse>>()
-
-        val client = apiService.getMovieById(id)
-        client.enqueue(object : Callback<MovieEntityResponse> {
-            override fun onResponse(
-                call: Call<MovieEntityResponse>,
-                response: Response<MovieEntityResponse>
-            ) {
-                val dataArray = response.body()
-                resultMovie.value =
-                    if (dataArray != null) ApiResponse.Success(dataArray) else ApiResponse.Empty
+    suspend fun getMovieById(id: Int): Flow<ApiResponse<MovieEntityResponse>> {
+        return flow {
+            try {
+                val response = apiService.getMovieById(id)
+                emit(ApiResponse.Success(response))
+            } catch (e: Exception) {
+                emit(ApiResponse.Error(e.toString()))
+                Log.e("RemoteDataSource", e.toString())
             }
-
-            override fun onFailure(call: Call<MovieEntityResponse>, t: Throwable) {
-                resultMovie.value = ApiResponse.Error(t.message.toString())
-                Log.e("RemoteDataSource", t.message.toString())
-            }
-
-        })
-        return resultMovie
+        }
     }
 
-    fun getTvById(id: Int): LiveData<ApiResponse<TvEntityResponse>> {
-        val resultTv = MutableLiveData<ApiResponse<TvEntityResponse>>()
-
-        val client = apiService.getTvById(id)
-        client.enqueue(object : Callback<TvEntityResponse> {
-            override fun onResponse(
-                call: Call<TvEntityResponse>,
-                response: Response<TvEntityResponse>
-            ) {
-                val dataArray = response.body()
-                resultTv.value =
-                    if (dataArray != null) ApiResponse.Success(dataArray) else ApiResponse.Empty
+    suspend fun getTvById(id: Int): Flow<ApiResponse<TvEntityResponse>> {
+        return flow {
+            try {
+                val response = apiService.getTvById(id)
+                emit(ApiResponse.Success(response))
+            } catch (e: Exception) {
+                emit(ApiResponse.Error(e.toString()))
+                Log.e("RemoteDataSource", e.toString())
             }
-
-            override fun onFailure(call: Call<TvEntityResponse>, t: Throwable) {
-                resultTv.value = ApiResponse.Error(t.message.toString())
-                Log.e("RemoteDataSource", t.message.toString())
-            }
-
-        })
-        return resultTv
+        }
     }
 
 }
