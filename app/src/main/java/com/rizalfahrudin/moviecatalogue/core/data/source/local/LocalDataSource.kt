@@ -3,19 +3,11 @@ package com.rizalfahrudin.moviecatalogue.core.data.source.local
 import com.rizalfahrudin.moviecatalogue.core.data.source.local.entity.MovieTvEntity
 import com.rizalfahrudin.moviecatalogue.core.data.source.local.room.MovieTvDao
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
+import javax.inject.Singleton
 
-
-class LocalDataSource private constructor(private val mMovieTvDao: MovieTvDao){
-    companion object {
-        private val INSTANCE: LocalDataSource? = null
-
-        fun getInstance(mMovieTvDao: MovieTvDao): LocalDataSource {
-            return INSTANCE
-                ?: LocalDataSource(
-                    mMovieTvDao
-                )
-        }
-    }
+@Singleton
+class LocalDataSource @Inject constructor(private val mMovieTvDao: MovieTvDao) {
 
     fun getMovieTv(type: Int): Flow<List<MovieTvEntity>> {
         return mMovieTvDao.getMovieTv(type)

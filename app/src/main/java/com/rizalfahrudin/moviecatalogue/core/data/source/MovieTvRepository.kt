@@ -17,32 +17,15 @@ import com.rizalfahrudin.moviecatalogue.core.utils.DataMapper
 import com.rizalfahrudin.moviecatalogue.core.vo.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class MovieTvRepository private constructor(
+@Singleton
+class MovieTvRepository @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource,
     private val appExecutor: AppExecutor
 ) : ImplMovieTvRepository {
-
-    companion object {
-        @Volatile
-        private var instance: MovieTvRepository? = null
-
-        fun getInstance(
-            remoteDataSource: RemoteDataSource,
-            localDataSource: LocalDataSource,
-            appExecutor: AppExecutor
-        ): MovieTvRepository =
-            instance
-                ?: synchronized(this) {
-                    instance
-                        ?: MovieTvRepository(
-                            remoteDataSource,
-                            localDataSource,
-                            appExecutor
-                        )
-                }
-    }
 
     override fun getDataMovieTv(typePosition: Int): Flow<Resource<List<MovieTv>>> {
         return when (typePosition) {

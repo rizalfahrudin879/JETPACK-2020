@@ -5,15 +5,17 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.rizalfahrudin.moviecatalogue.MyApplication
 import com.rizalfahrudin.moviecatalogue.R
 import com.rizalfahrudin.moviecatalogue.core.ui.ViewModelFactory
 import com.rizalfahrudin.moviecatalogue.core.vo.Resource
 import kotlinx.android.synthetic.main.activity_detail.*
+import javax.inject.Inject
 
 class DetailActivity : AppCompatActivity() {
     companion object {
@@ -21,21 +23,20 @@ class DetailActivity : AppCompatActivity() {
         const val ID = "id"
     }
 
-    lateinit var viewModel: DetailViewModel
+    @Inject
+    lateinit var factory: ViewModelFactory
+
+    private val viewModel: DetailViewModel by viewModels {
+        factory
+    }
     private var menu: Menu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
-
+        (application as MyApplication).appComponent.inject(this)
         supportActionBar?.title = "Detail"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        val factory = ViewModelFactory.getInstance(this)
-        viewModel = ViewModelProvider(
-            this,
-            factory
-        )[DetailViewModel::class.java]
 
         val position = intent.getIntExtra(POSITION, 0)
         val id = intent.getIntExtra(ID, 0)

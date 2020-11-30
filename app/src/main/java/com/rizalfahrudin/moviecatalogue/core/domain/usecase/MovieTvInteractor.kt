@@ -2,8 +2,10 @@ package com.rizalfahrudin.moviecatalogue.core.domain.usecase
 
 import com.rizalfahrudin.moviecatalogue.core.domain.model.MovieTv
 import com.rizalfahrudin.moviecatalogue.core.domain.repository.ImplMovieTvRepository
+import javax.inject.Inject
 
-class MovieTvInteractor(private val implMovieTvRepository: ImplMovieTvRepository): MovieTvUseCase{
+class MovieTvInteractor @Inject constructor(private val implMovieTvRepository: ImplMovieTvRepository) :
+    MovieTvUseCase {
     override fun getDataMovieTv(typePosition: Int) =
         implMovieTvRepository.getDataMovieTv(typePosition)
 
