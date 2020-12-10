@@ -7,8 +7,10 @@ import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.MovieEn
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.MovieResponse
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.TvEntityResponse
 import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.TvResponse
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -30,7 +32,7 @@ class RemoteDataSource @Inject constructor(
                 emit(ApiResponse.Error(e.toString()))
                 Log.e("RemoteDataSource", e.toString())
             }
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     suspend fun getTv(): Flow<ApiResponse<TvResponse>> {
@@ -46,7 +48,7 @@ class RemoteDataSource @Inject constructor(
                 emit(ApiResponse.Error(e.toString()))
                 Log.e("RemoteDataSource", e.toString())
             }
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     suspend fun getMovieById(id: Int): Flow<ApiResponse<MovieEntityResponse>> {
@@ -58,7 +60,7 @@ class RemoteDataSource @Inject constructor(
                 emit(ApiResponse.Error(e.toString()))
                 Log.e("RemoteDataSource", e.toString())
             }
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     suspend fun getTvById(id: Int): Flow<ApiResponse<TvEntityResponse>> {
@@ -70,7 +72,7 @@ class RemoteDataSource @Inject constructor(
                 emit(ApiResponse.Error(e.toString()))
                 Log.e("RemoteDataSource", e.toString())
             }
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
 }
