@@ -7,13 +7,12 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.rizalfahrudin.moviecatalogue.R
-import com.rizalfahrudin.moviecatalogue.core.ui.ViewModelFactory
 import com.rizalfahrudin.moviecatalogue.core.vo.Resource
 import kotlinx.android.synthetic.main.activity_detail.*
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class DetailActivity : AppCompatActivity() {
     companion object {
@@ -21,7 +20,7 @@ class DetailActivity : AppCompatActivity() {
         const val ID = "id"
     }
 
-    lateinit var viewModel: DetailViewModel
+    private val detailViewModel: DetailViewModel by viewModel()
     private var menu: Menu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,18 +30,18 @@ class DetailActivity : AppCompatActivity() {
         supportActionBar?.title = "Detail"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val factory = ViewModelFactory.getInstance(this)
-        viewModel = ViewModelProvider(
-            this,
-            factory
-        )[DetailViewModel::class.java]
+//        val factory = ViewModelFactory.getInstance(this)
+//        viewModel = ViewModelProvider(
+//            this,
+//            factory
+//        )[DetailViewModel::class.java]
 
         val position = intent.getIntExtra(POSITION, 0)
         val id = intent.getIntExtra(ID, 0)
 
-        viewModel.setTypeMovieTv(position, id)
+        detailViewModel.setTypeMovieTv(position, id)
 
-        viewModel.movieTv.observe(this, {
+        detailViewModel.movieTv.observe(this, {
             if (it != null) {
                 when (it) {
                     is Resource.Loading -> loading_detail.visibility = View.VISIBLE
@@ -65,7 +64,7 @@ class DetailActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_detail, menu)
         this.menu = menu
 
-        viewModel.movieTv.observe(this, {
+        detailViewModel.movieTv.observe(this, {
             if (it != null) {
                 when (it) {
                     is Resource.Success -> {
@@ -84,7 +83,7 @@ class DetailActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_favorite) {
-            viewModel.setBookmark()
+            detailViewModel.setBookmark()
             return true
         }
         return super.onOptionsItemSelected(item)

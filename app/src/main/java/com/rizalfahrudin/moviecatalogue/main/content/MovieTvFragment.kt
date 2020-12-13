@@ -6,16 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rizalfahrudin.moviecatalogue.R
 import com.rizalfahrudin.moviecatalogue.core.ui.MovieTvAdapter
-import com.rizalfahrudin.moviecatalogue.core.ui.ViewModelFactory
 import com.rizalfahrudin.moviecatalogue.core.vo.Resource
 import com.rizalfahrudin.moviecatalogue.detail.DetailActivity
 import com.rizalfahrudin.moviecatalogue.detail.DetailActivity.Companion.ID
 import com.rizalfahrudin.moviecatalogue.detail.DetailActivity.Companion.POSITION
 import kotlinx.android.synthetic.main.fragment_movie_tv.*
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class MovieTvFragment : Fragment() {
     companion object {
@@ -24,6 +23,8 @@ class MovieTvFragment : Fragment() {
         const val MAIN = 100
         const val FAVORITE = 200
     }
+
+    private val movieTvViewModel: MovieTvViewModel by viewModel()
 
     private lateinit var movieTvAdapter: MovieTvAdapter
 
@@ -38,12 +39,12 @@ class MovieTvFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         if (activity != null) {
 
-            val factory = ViewModelFactory.getInstance(requireActivity())
-            val viewModel = ViewModelProvider(
-                this,
-                factory
-            )[MovieTvViewModel::class.java]
-
+//            val factory = ViewModelFactory.getInstance(requireActivity())
+//            val viewModel = ViewModelProvider(
+//                this,
+//                factory
+//            )[MovieTvViewModel::class.java]
+//
             val position = arguments?.getInt(POSITION_TAB)
             val pageCode = arguments?.getInt(PAGE)
 
@@ -55,10 +56,10 @@ class MovieTvFragment : Fragment() {
                     startActivity(intent)
                 }
 
-            viewModel.setTypeMovieTv(position)
+            movieTvViewModel.setTypeMovieTv(position)
 
             if (pageCode == MAIN) {
-                viewModel.getDataMovieTv().observe(this, { movieTv ->
+                movieTvViewModel.getDataMovieTv().observe(this, { movieTv ->
                     if (movieTv != null) {
                         when (movieTv) {
                             is Resource.Loading -> loading_main.visibility = View.VISIBLE
@@ -74,7 +75,7 @@ class MovieTvFragment : Fragment() {
                     }
                 })
             } else {
-                viewModel.getDataMovieTvFavorite().observe(this, { movieTv ->
+                movieTvViewModel.getDataMovieTvFavorite().observe(this, { movieTv ->
                     if (movieTv != null) {
                         loading_main.visibility = View.GONE
                         movieTvAdapter.setMovieTv(movieTv)

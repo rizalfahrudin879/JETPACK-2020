@@ -18,31 +18,31 @@ import com.rizalfahrudin.moviecatalogue.core.vo.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class MovieTvRepository private constructor(
+class MovieTvRepository(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource,
     private val appExecutor: AppExecutor
 ) : ImplMovieTvRepository {
 
-    companion object {
-        @Volatile
-        private var instance: MovieTvRepository? = null
-
-        fun getInstance(
-            remoteDataSource: RemoteDataSource,
-            localDataSource: LocalDataSource,
-            appExecutor: AppExecutor
-        ): MovieTvRepository =
-            instance
-                ?: synchronized(this) {
-                    instance
-                        ?: MovieTvRepository(
-                            remoteDataSource,
-                            localDataSource,
-                            appExecutor
-                        )
-                }
-    }
+//    companion object {
+//        @Volatile
+//        private var instance: MovieTvRepository? = null
+//
+//        fun getInstance(
+//            remoteDataSource: RemoteDataSource,
+//            localDataSource: LocalDataSource,
+//            appExecutor: AppExecutor
+//        ): MovieTvRepository =
+//            instance
+//                ?: synchronized(this) {
+//                    instance
+//                        ?: MovieTvRepository(
+//                            remoteDataSource,
+//                            localDataSource,
+//                            appExecutor
+//                        )
+//                }
+//    }
 
     override fun getDataMovieTv(typePosition: Int): Flow<Resource<List<MovieTv>>> {
         return when (typePosition) {

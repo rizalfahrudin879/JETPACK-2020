@@ -5,17 +5,17 @@ import com.rizalfahrudin.moviecatalogue.core.data.source.local.room.MovieTvDao
 import kotlinx.coroutines.flow.Flow
 
 
-class LocalDataSource private constructor(private val mMovieTvDao: MovieTvDao){
-    companion object {
-        private val INSTANCE: LocalDataSource? = null
-
-        fun getInstance(mMovieTvDao: MovieTvDao): LocalDataSource {
-            return INSTANCE
-                ?: LocalDataSource(
-                    mMovieTvDao
-                )
-        }
-    }
+class LocalDataSource(private val mMovieTvDao: MovieTvDao) {
+//    companion object {
+//        private val INSTANCE: LocalDataSource? = null
+//
+//        fun getInstance(mMovieTvDao: MovieTvDao): LocalDataSource {
+//            return INSTANCE
+//                ?: LocalDataSource(
+//                    mMovieTvDao
+//                )
+//        }
+//    }
 
     fun getMovieTv(type: Int): Flow<List<MovieTvEntity>> {
         return mMovieTvDao.getMovieTv(type)
