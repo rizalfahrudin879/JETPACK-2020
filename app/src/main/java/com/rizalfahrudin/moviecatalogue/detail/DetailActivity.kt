@@ -69,8 +69,8 @@ class DetailActivity : AppCompatActivity() {
                 when (it) {
                     is Resource.Success -> {
                         if (it.data != null) {
-                            val state = it.data.favorite
-                            setFavoriteState(state)
+                            val state = it.data?.favorite
+                            setFavoriteState(state!!)
                         }
                     }
                     else -> {

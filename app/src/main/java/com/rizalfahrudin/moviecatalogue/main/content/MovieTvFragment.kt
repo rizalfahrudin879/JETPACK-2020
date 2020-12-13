@@ -38,13 +38,6 @@ class MovieTvFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         if (activity != null) {
-
-//            val factory = ViewModelFactory.getInstance(requireActivity())
-//            val viewModel = ViewModelProvider(
-//                this,
-//                factory
-//            )[MovieTvViewModel::class.java]
-//
             val position = arguments?.getInt(POSITION_TAB)
             val pageCode = arguments?.getInt(PAGE)
 

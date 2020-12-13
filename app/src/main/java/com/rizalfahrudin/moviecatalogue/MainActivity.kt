@@ -6,7 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.tabs.TabLayoutMediator
-import com.rizalfahrudin.moviecatalogue.core.ui.PagerAdapter
+import com.rizalfahrudin.moviecatalogue.main.PagerAdapter
 import com.rizalfahrudin.moviecatalogue.main.content.MovieTvFragment.Companion.MAIN
 import com.rizalfahrudin.moviecatalogue.main.favorite.FavoriteActivity
 import kotlinx.android.synthetic.main.activity_main.*

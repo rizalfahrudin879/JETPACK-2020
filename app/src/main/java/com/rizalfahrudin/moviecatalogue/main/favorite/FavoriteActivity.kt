@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.tabs.TabLayoutMediator
 import com.rizalfahrudin.moviecatalogue.R
-import com.rizalfahrudin.moviecatalogue.core.ui.PagerAdapter
+import com.rizalfahrudin.moviecatalogue.main.PagerAdapter
 import com.rizalfahrudin.moviecatalogue.main.content.MovieTvFragment.Companion.FAVORITE
 import kotlinx.android.synthetic.main.activity_main.*
 
