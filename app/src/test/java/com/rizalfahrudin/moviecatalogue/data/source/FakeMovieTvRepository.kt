@@ -4,35 +4,40 @@ import androidx.lifecycle.LiveData
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.rizalfahrudin.moviecatalogue.BuildConfig.BASE_IMG_URL
-import com.rizalfahrudin.moviecatalogue.data.NetworkBoundResource
-import com.rizalfahrudin.moviecatalogue.data.source.local.LocalDataSource
-import com.rizalfahrudin.moviecatalogue.data.source.local.entity.MovieTvEntity
-import com.rizalfahrudin.moviecatalogue.data.source.remote.ApiResponse
-import com.rizalfahrudin.moviecatalogue.data.source.remote.RemoteDataSource
-import com.rizalfahrudin.moviecatalogue.data.source.remote.response.MovieEntityResponse
-import com.rizalfahrudin.moviecatalogue.data.source.remote.response.MovieResponse
-import com.rizalfahrudin.moviecatalogue.data.source.remote.response.TvEntityResponse
-import com.rizalfahrudin.moviecatalogue.data.source.remote.response.TvResponse
-import com.rizalfahrudin.moviecatalogue.utils.AppExecutor
-import com.rizalfahrudin.moviecatalogue.vo.Resource
+import com.rizalfahrudin.moviecatalogue.core.data.source.MovieTvDataSource
+import com.rizalfahrudin.moviecatalogue.core.data.source.local.LocalDataSource
+import com.rizalfahrudin.moviecatalogue.core.data.source.local.entity.MovieTvEntity
+import com.rizalfahrudin.moviecatalogue.core.data.source.remote.RemoteDataSource
+import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.MovieEntityResponse
+import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.MovieResponse
+import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.TvEntityResponse
+import com.rizalfahrudin.moviecatalogue.core.data.source.remote.response.TvResponse
+import com.rizalfahrudin.moviecatalogue.core.utils.AppExecutor
+import com.rizalfahrudin.moviecatalogue.core.vo.Resource
 
 class FakeMovieTvRepository(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource,
     private val appExecutor: AppExecutor
-): MovieTvDataSource{
+) : MovieTvDataSource {
 
     override fun getDataMovieTv(typePosition: Int): LiveData<Resource<PagedList<MovieTvEntity>>> {
-        return when(typePosition) {
+        return when (typePosition) {
             0 -> {
-                object : NetworkBoundResource<PagedList<MovieTvEntity>, MovieResponse>(appExecutor) {
+                object :
+                    _root_ide_package_.com.rizalfahrudin.moviecatalogue.core.data.NetworkBoundResource<PagedList<MovieTvEntity>, MovieResponse>(
+                        appExecutor
+                    ) {
                     override fun loadFromDB(): LiveData<PagedList<MovieTvEntity>> {
                         val config = PagedList.Config.Builder()
                             .setEnablePlaceholders(false)
                             .setInitialLoadSizeHint(4)
                             .setPageSize(4)
                             .build()
-                        return LivePagedListBuilder(localDataSource.getMovieTv(typePosition), config).build()
+                        return LivePagedListBuilder(
+                            localDataSource.getMovieTv(typePosition),
+                            config
+                        ).build()
                     }
 
                     override fun showFetchData(data: PagedList<MovieTvEntity>?): Boolean {
@@ -46,13 +51,14 @@ class FakeMovieTvRepository(
                     override fun saveCallResult(data: MovieResponse) {
                         val movieList = ArrayList<MovieTvEntity>()
                         for (response in data.movie) {
-                            val movie = MovieTvEntity(
-                                response.id,
-                                response.original_title,
-                                response.overview,
-                                BASE_IMG_URL + response.poster_path,
-                                typePosition
-                            )
+                            val movie =
+                                MovieTvEntity(
+                                    response.id,
+                                    response.original_title,
+                                    response.overview,
+                                    BASE_IMG_URL + response.poster_path,
+                                    typePosition
+                                )
                             movieList.add(movie)
                         }
                         localDataSource.insertListMovieTv(movieList)
@@ -60,14 +66,20 @@ class FakeMovieTvRepository(
                 }.asLiveData()
             }
             else -> {
-                object : NetworkBoundResource<PagedList<MovieTvEntity>, TvResponse>(appExecutor) {
+                object :
+                    _root_ide_package_.com.rizalfahrudin.moviecatalogue.core.data.NetworkBoundResource<PagedList<MovieTvEntity>, TvResponse>(
+                        appExecutor
+                    ) {
                     override fun loadFromDB(): LiveData<PagedList<MovieTvEntity>> {
                         val config = PagedList.Config.Builder()
                             .setEnablePlaceholders(false)
                             .setInitialLoadSizeHint(4)
                             .setPageSize(4)
                             .build()
-                        return LivePagedListBuilder(localDataSource.getMovieTv(typePosition), config).build()
+                        return LivePagedListBuilder(
+                            localDataSource.getMovieTv(typePosition),
+                            config
+                        ).build()
                     }
 
                     override fun showFetchData(data: PagedList<MovieTvEntity>?): Boolean {
@@ -81,13 +93,14 @@ class FakeMovieTvRepository(
                     override fun saveCallResult(data: TvResponse) {
                         val movieList = ArrayList<MovieTvEntity>()
                         for (response in data.tv) {
-                            val movie = MovieTvEntity(
-                                response.id,
-                                response.original_name,
-                                response.overview,
-                                BASE_IMG_URL + response.poster_path,
-                                typePosition
-                            )
+                            val movie =
+                                MovieTvEntity(
+                                    response.id,
+                                    response.original_name,
+                                    response.overview,
+                                    BASE_IMG_URL + response.poster_path,
+                                    typePosition
+                                )
                             movieList.add(movie)
                         }
                         localDataSource.insertListMovieTv(movieList)
@@ -103,7 +116,10 @@ class FakeMovieTvRepository(
     ): LiveData<Resource<MovieTvEntity>> {
         return when(typePosition) {
             0 -> {
-                object : NetworkBoundResource<MovieTvEntity, MovieEntityResponse>(appExecutor) {
+                object :
+                    _root_ide_package_.com.rizalfahrudin.moviecatalogue.core.data.NetworkBoundResource<MovieTvEntity, MovieEntityResponse>(
+                        appExecutor
+                    ) {
                     override fun loadFromDB(): LiveData<MovieTvEntity> {
                         return localDataSource.getMovieTvById(id)
                     }
@@ -117,20 +133,24 @@ class FakeMovieTvRepository(
                     }
 
                     override fun saveCallResult(data: MovieEntityResponse) {
-                        val movie = MovieTvEntity(
-                            data.id,
-                            data.original_title,
-                            data.overview,
-                            BASE_IMG_URL + data.poster_path,
-                            typePosition,
-                            favorite = false
-                        )
+                        val movie =
+                            MovieTvEntity(
+                                data.id,
+                                data.original_title,
+                                data.overview,
+                                BASE_IMG_URL + data.poster_path,
+                                typePosition,
+                                favorite = false
+                            )
                         localDataSource.insertMovieTv(movie)
                     }
                 }.asLiveData()
             }
             else -> {
-                object : NetworkBoundResource<MovieTvEntity, TvEntityResponse>(appExecutor) {
+                object :
+                    _root_ide_package_.com.rizalfahrudin.moviecatalogue.core.data.NetworkBoundResource<MovieTvEntity, TvEntityResponse>(
+                        appExecutor
+                    ) {
                     override fun loadFromDB(): LiveData<MovieTvEntity> {
                         return localDataSource.getMovieTvById(id)
                     }
@@ -144,14 +164,15 @@ class FakeMovieTvRepository(
                     }
 
                     override fun saveCallResult(data: TvEntityResponse) {
-                        val movie = MovieTvEntity(
-                            data.id,
-                            data.original_name,
-                            data.overview,
-                            BASE_IMG_URL + data.poster_path,
-                            typePosition,
-                            favorite = false
-                        )
+                        val movie =
+                            MovieTvEntity(
+                                data.id,
+                                data.original_name,
+                                data.overview,
+                                BASE_IMG_URL + data.poster_path,
+                                typePosition,
+                                favorite = false
+                            )
                         localDataSource.insertMovieTv(movie)
                     }
                 }.asLiveData()

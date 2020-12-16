@@ -4,18 +4,17 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import com.nhaarman.mockitokotlin2.verify
-import com.rizalfahrudin.moviecatalogue.data.source.local.LocalDataSource
-import com.rizalfahrudin.moviecatalogue.data.source.local.entity.MovieTvEntity
-import com.rizalfahrudin.moviecatalogue.data.source.remote.RemoteDataSource
-import com.rizalfahrudin.moviecatalogue.utils.AppExecutor
-import com.rizalfahrudin.moviecatalogue.utils.DataDummy
-import com.rizalfahrudin.moviecatalogue.utils.LiveDataTestUtil
+import com.rizalfahrudin.moviecatalogue.core.data.source.local.LocalDataSource
+import com.rizalfahrudin.moviecatalogue.core.data.source.local.entity.MovieTvEntity
+import com.rizalfahrudin.moviecatalogue.core.data.source.remote.RemoteDataSource
+import com.rizalfahrudin.moviecatalogue.core.utils.AppExecutor
+import com.rizalfahrudin.moviecatalogue.core.utils.DataDummy
+import com.rizalfahrudin.moviecatalogue.core.utils.LiveDataTestUtil
+import com.rizalfahrudin.moviecatalogue.core.vo.Resource
 import com.rizalfahrudin.moviecatalogue.utils.PagedListUtil
-import com.rizalfahrudin.moviecatalogue.vo.Resource
-import org.junit.Test
-
 import org.junit.Assert.*
 import org.junit.Rule
+import org.junit.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 
@@ -43,7 +42,7 @@ class MovieTvRepositoryTest {
         val movieEntities = Resource.success(PagedListUtil.mockPagedList(DataDummy.generateDataMovie()))
         verify(local).getMovieTv(position)
         assertNotNull(movieEntities.data)
-        assertEquals(movieResponse.movie.size.toLong(), movieEntities.data?.size?.toLong())
+        assertEquals(movieResponse.movie.size.toLong(), movieEntities.data.size.toLong())
     }
 
     @Test
@@ -71,6 +70,6 @@ class MovieTvRepositoryTest {
         val movie = Resource.success(PagedListUtil.mockPagedList(DataDummy.generateDataMovie()))
         verify(local).getFavoriteMovieTv(position)
         assertNotNull(movie)
-        assertEquals(movieResponse.movie.size.toLong() ,movie.data?.size?.toLong())
+        assertEquals(movieResponse.movie.size.toLong() , movie.data.size.toLong())
     }
 }
