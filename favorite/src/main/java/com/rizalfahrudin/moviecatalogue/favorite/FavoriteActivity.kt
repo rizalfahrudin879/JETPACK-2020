@@ -1,24 +1,24 @@
-package com.rizalfahrudin.moviecatalogue.main.favorite
+package com.rizalfahrudin.moviecatalogue.favorite
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.tabs.TabLayoutMediator
-import com.rizalfahrudin.moviecatalogue.R
-import com.rizalfahrudin.moviecatalogue.main.PagerAdapter
-import com.rizalfahrudin.moviecatalogue.main.content.MovieTvFragment.Companion.FAVORITE
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_favorite.*
+import org.koin.core.context.loadKoinModules
 
 class FavoriteActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_favorite)
 
+        loadKoinModules(favoriteModule)
+
         supportActionBar?.title = "Favorite"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.elevation = 0f
 
         view_pager.adapter =
-            PagerAdapter(this, FAVORITE)
+            FavoritePagerAdapter(this)
 
         val title = intArrayOf(R.string.movie, R.string.tv)
         TabLayoutMediator(tabs, view_pager) { tabs, position ->
@@ -26,6 +26,7 @@ class FavoriteActivity : AppCompatActivity() {
         }.attach()
 
     }
+
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return super.onSupportNavigateUp()
@@ -34,6 +35,6 @@ class FavoriteActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         view_pager.adapter =
-            PagerAdapter(this, FAVORITE)
+            FavoritePagerAdapter(this)
     }
 }

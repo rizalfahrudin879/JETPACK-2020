@@ -30,12 +30,6 @@ class DetailActivity : AppCompatActivity() {
         supportActionBar?.title = "Detail"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-//        val factory = ViewModelFactory.getInstance(this)
-//        viewModel = ViewModelProvider(
-//            this,
-//            factory
-//        )[DetailViewModel::class.java]
-
         val position = intent.getIntExtra(POSITION, 0)
         val id = intent.getIntExtra(ID, 0)
 
@@ -55,6 +49,7 @@ class DetailActivity : AppCompatActivity() {
                             .into(img_poster_detail)
                     }
                     is Resource.Error -> loading_detail.visibility = View.GONE
+                    else -> { }
                 }
             }
         })
@@ -73,8 +68,7 @@ class DetailActivity : AppCompatActivity() {
                             setFavoriteState(state!!)
                         }
                     }
-                    else -> {
-                    }
+                    else -> { }
                 }
             }
         })

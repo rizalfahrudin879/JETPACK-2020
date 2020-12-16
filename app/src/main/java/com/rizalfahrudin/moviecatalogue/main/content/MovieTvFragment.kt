@@ -39,7 +39,6 @@ class MovieTvFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         if (activity != null) {
             val position = arguments?.getInt(POSITION_TAB)
-            val pageCode = arguments?.getInt(PAGE)
 
             movieTvAdapter =
                 MovieTvAdapter {
@@ -51,7 +50,7 @@ class MovieTvFragment : Fragment() {
 
             movieTvViewModel.setTypeMovieTv(position)
 
-            if (pageCode == MAIN) {
+//            if (pageCode == MAIN) {
                 movieTvViewModel.getDataMovieTv().observe(this, { movieTv ->
                     if (movieTv != null) {
                         when (movieTv) {
@@ -67,15 +66,15 @@ class MovieTvFragment : Fragment() {
                         }
                     }
                 })
-            } else {
-                movieTvViewModel.getDataMovieTvFavorite().observe(this, { movieTv ->
-                    if (movieTv != null) {
-                        loading_main.visibility = View.GONE
-                        movieTvAdapter.setMovieTv(movieTv)
-                        movieTvAdapter.notifyDataSetChanged()
-                    }
-                })
-            }
+//            } else {
+//                movieTvViewModel.getDataMovieTvFavorite().observe(this, { movieTv ->
+//                    if (movieTv != null) {
+//                        loading_main.visibility = View.GONE
+//                        movieTvAdapter.setMovieTv(movieTv)
+//                        movieTvAdapter.notifyDataSetChanged()
+//                    }
+//                })
+//            }
 
             with(rv_movie_tv) {
                 layoutManager = LinearLayoutManager(context)

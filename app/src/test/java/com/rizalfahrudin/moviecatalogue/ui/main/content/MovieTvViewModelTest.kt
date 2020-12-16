@@ -47,7 +47,7 @@ class MovieTvViewModelTest {
     fun getDataMovie() {
         viewModel.setTypeMovieTv(0)
         val dummyMovie = Resource.success(pagedList)
-        `when`(dummyMovie.data?.size).thenReturn(5)
+        `when`(dummyMovie.data.size).thenReturn(5)
 
         val movie = MutableLiveData<Resource<PagedList<MovieTvEntity>>>()
         movie.value = dummyMovie
@@ -66,7 +66,7 @@ class MovieTvViewModelTest {
     fun getDataTv() {
         viewModel.setTypeMovieTv(1)
         val dummyTv = Resource.success(pagedList)
-        `when`(dummyTv.data?.size).thenReturn(5)
+        `when`(dummyTv.data.size).thenReturn(5)
 
         val tv = MutableLiveData<Resource<PagedList<MovieTvEntity>>>()
         tv.value = dummyTv
